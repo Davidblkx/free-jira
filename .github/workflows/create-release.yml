@@ -8,34 +8,48 @@ jobs:
   build:
     name: Create Release
     runs-on: ubuntu-latest
+    env:
+      TARGET_WIN: win-x64
+      TARGET_LIN: linux-x64
+      TARGET_OSX: osx-x64
     steps:
       - uses: actions/checkout@v2
+      - name: Extract tag name
+        shell: bash
+        run: echo "##[set-output name=tag;]$(echo ${GITHUB_REF#refs/tags/})"
+        id: extract_tag
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 3.1.100
-      - name: Build windows release
-        run: dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true
-      - name: Zip releases
+      - name: Build target release
         run: |
-          zip --junk-paths -r free-jira.win-x64.zip free-jira/bin/Release/netcoreapp3.1/win-x64/publish/*
+          dotnet publish -r $TARGET_WIN -c Release /p:PublishSingleFile=true
+          dotnet publish -r $TARGET_LIN -c Release /p:PublishSingleFile=true
+          dotnet publish -r $TARGET_OSX -c Release /p:PublishSingleFile=true
+      - name: Zip release
+        run: |
+          zip --junk-paths -r free-jira.$TARGET_WIN-${{ steps.extract_tag.outputs.tag }}.zip free-jira/bin/Release/netcoreapp3.1/$TARGET_WIN/publish/*
+          zip --junk-paths -r free-jira.$TARGET_LIN-${{ steps.extract_tag.outputs.tag }}.zip free-jira/bin/Release/netcoreapp3.1/$TARGET_LIN/publish/*
+          zip --junk-paths -r free-jira.$TARGET_OSX-${{ steps.extract_tag.outputs.tag }}.zip free-jira/bin/Release/netcoreapp3.1/$TARGET_OSX/publish/*
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ steps.extract_tag.outputs.tag }}
+          release_name: Release ${{ steps.extract_tag.outputs.tag }}
           draft: false
           prerelease: false
       - name: Upload Release Asset
         id: upload-release-asset 
-        uses: actions/upload-release-asset@v1
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./free-jira.win-x64.zip
-          asset_name: free-jira.win-x64.zip
-          asset_content_type: application/zip
+          files: |
+            free-jira.${{ env.TARGET_WIN }}-${{ steps.extract_tag.outputs.tag }}.zip
+            free-jira.${{ env.TARGET_LIN }}-${{ steps.extract_tag.outputs.tag }}.zip
+            free-jira.${{ env.TARGET_OSX }}-${{ steps.extract_tag.outputs.tag }}.zip
+          draft: true
