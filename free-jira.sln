@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "free-jira", "free-jira\free-jira.csproj", "{0FFA1A5E-D499-4A18-974D-482153B9E08B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "free-jira.tests", "free-jira.tests\free-jira.tests.csproj", "{D1ACEA34-50EE-4744-903D-00F9BB61609D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,17 @@ Global
 		{0FFA1A5E-D499-4A18-974D-482153B9E08B}.Release|x64.Build.0 = Release|Any CPU
 		{0FFA1A5E-D499-4A18-974D-482153B9E08B}.Release|x86.ActiveCfg = Release|Any CPU
 		{0FFA1A5E-D499-4A18-974D-482153B9E08B}.Release|x86.Build.0 = Release|Any CPU
+		{D1ACEA34-50EE-4744-903D-00F9BB61609D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1ACEA34-50EE-4744-903D-00F9BB61609D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1ACEA34-50EE-4744-903D-00F9BB61609D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D1ACEA34-50EE-4744-903D-00F9BB61609D}.Debug|x64.Build.0 = Debug|Any CPU
+		{D1ACEA34-50EE-4744-903D-00F9BB61609D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D1ACEA34-50EE-4744-903D-00F9BB61609D}.Debug|x86.Build.0 = Debug|Any CPU
+		{D1ACEA34-50EE-4744-903D-00F9BB61609D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1ACEA34-50EE-4744-903D-00F9BB61609D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1ACEA34-50EE-4744-903D-00F9BB61609D}.Release|x64.ActiveCfg = Release|Any CPU
+		{D1ACEA34-50EE-4744-903D-00F9BB61609D}.Release|x64.Build.0 = Release|Any CPU
+		{D1ACEA34-50EE-4744-903D-00F9BB61609D}.Release|x86.ActiveCfg = Release|Any CPU
+		{D1ACEA34-50EE-4744-903D-00F9BB61609D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
