@@ -1,5 +1,5 @@
 using System;
-namespace free_jira.Jira
+namespace free_jira.Jira.Profile
 {
     public class JiraProfile
     {

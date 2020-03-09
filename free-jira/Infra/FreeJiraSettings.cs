@@ -66,7 +66,7 @@ namespace free_jira.Infra
         public string DefaultProfile { get; set; } = "default";
 
         /// <summary>
-        /// Load settings file
+        /// Load settings file. If a files doesn't exist, one is created
         /// </summary>
         /// <returns></returns>
         public async static Task<IFreeJiraSettings> GetSettings() {
@@ -94,6 +94,10 @@ namespace free_jira.Infra
             };
         }
 
+        /// <summary>
+        /// Load setting file Path, if no file exists, one is created
+        /// </summary>
+        /// <returns></returns>
         private static string InitSettings() {
             var baseFolder = PathHelpers.GetSettingsFolderPath();
             var settings = new FreeJiraSettings() { BaseFolder = baseFolder };
@@ -101,6 +105,11 @@ namespace free_jira.Infra
             return SaveSettings(settings);
         }
 
+        /// <summary>
+        /// Save settings to user folder
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <returns></returns>
         private static string SaveSettings(FreeJiraSettings settings) {
             var baseFolder = PathHelpers.GetSettingsFolderPath();
             var settingsFile = Path.Combine(baseFolder, "settings.json");

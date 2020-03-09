@@ -1,26 +1,31 @@
-using System;
+using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using free_jira.Server;
+using free_jira.Infra;
+using System.Threading.Tasks;
 
 namespace free_jira
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            if (Terminal.TerminalHandler.HandleArgs(args)) {
-                Console.WriteLine("Hello");
+            var settings = await FreeJiraSettings.GetSettings();
+            if (args.Contains("--server") || settings.StartupMode == StartupMode.Server) {
+                CreateHostBuilder(args, settings.ServerPort).Build().Run();
             } else {
-                CreateHostBuilder(args).Build().Run();
+                Terminal.TerminalHandler.HandleArgs(args);
             }
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
+        public static IHostBuilder CreateHostBuilder(string[] args, int port) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder
+                        .UseStartup<Startup>()
+                        .UseUrls($"http://localhost:{port}");
                 });
     }
 }

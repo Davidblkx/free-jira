@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using free_jira.Jira;
+using free_jira.Jira.Profile;
 using Xunit;
 
 namespace free_jira.tests.Jira
@@ -9,7 +9,7 @@ namespace free_jira.tests.Jira
     {
         [Fact]
         public void ValidateTestEnvVariables() {
-            var profile = GetProfile();
+            var profile = JiraProfileLoader.GetProfile();
 
             Assert.NotNull(profile);
             Assert.NotEqual("", profile.Url);
@@ -19,7 +19,7 @@ namespace free_jira.tests.Jira
 
         [Fact]
         public async Task JiraProfileCreateUpdate() {
-            var profile = GetProfile();
+            var profile = JiraProfileLoader.GetProfile();
             var service = await JiraProfileService.Create(profile);
 
             Assert.NotNull(service);
@@ -31,14 +31,53 @@ namespace free_jira.tests.Jira
             Assert.Equal(profile.Pass, p.Pass);
             Assert.Equal(profile.User, p.User);
             Assert.Equal(profile.Url, p.Url);
+
+            service.Dispose();
+
+            var isClean = await JiraProfileLoader.CleanProfile(profile.ProfileName);
+            Assert.True(isClean);
         }
 
-        private JiraProfile GetProfile() {
-            return new JiraProfile {
-                Pass = Environment.GetEnvironmentVariable("JIRA_PASS") ?? "",
-                User = Environment.GetEnvironmentVariable("JIRA_USER") ?? "",
-                Url = Environment.GetEnvironmentVariable("JIRA_URL") ?? ""
-            };
+        [Fact]
+        public async Task JiraProfileGetSprintService() {
+            var name = "TestSprintService";
+            var service = await JiraProfileLoader.GetSprintService(name);
+
+            Assert.NotNull(service);
+
+            service.GetParent().Dispose();
+            await JiraProfileLoader.CleanProfile(name);
+        }
+
+        [Fact]
+        public async Task JiraProfileSprint() {
+            var name = "TestSprintService_all";
+            var service = await JiraProfileLoader.GetSprintService(name);
+            var sprintName = "Test1";
+            var fuzzyName = " TEST1  ";
+            var start = DateTime.Now.Subtract(TimeSpan.FromDays(2));
+            var end = DateTime.Now.AddDays(2);
+
+            Assert.NotNull(service);
+
+            var testCreated = service.CreateSprint(sprintName, start, end);
+            var testCreateDuplicate = service.CreateSprint(sprintName, start, end);
+            var testGetActive = service.GetActiveSprint();
+            var testGetById = service.GetSprintByName(fuzzyName);
+            var testDelete = service.DeleteSprint(sprintName);
+            var testDeleteDuplicate = service.DeleteSprint(sprintName);
+
+            Assert.True(testCreated);
+            Assert.False(testCreateDuplicate);
+            Assert.NotNull(testGetActive);
+            Assert.Equal(sprintName, testGetActive?.Name);
+            Assert.NotNull(testGetById);
+            Assert.Equal(sprintName, testGetById?.Name);
+            Assert.True(testDelete);
+            Assert.False(testDeleteDuplicate);
+
+            service.GetParent().Dispose();
+            await JiraProfileLoader.CleanProfile(name);
         }
     }
 }
