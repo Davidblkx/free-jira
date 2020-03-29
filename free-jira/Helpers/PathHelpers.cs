@@ -22,5 +22,9 @@ namespace free_jira.Helpers
         public static FileInfo RelativeFile(this DirectoryInfo directory, params string[] paths) {
             return new FileInfo(Path.Combine(directory.FullName, paths.JoinString('/')));
         }
+
+        public static DirectoryInfo RelativeDirectory(this DirectoryInfo directory, params string[] paths) {
+            return new DirectoryInfo(Path.Combine(directory.FullName, paths.JoinString('/')));
+        }
     }
 }

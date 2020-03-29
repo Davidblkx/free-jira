@@ -1,4 +1,7 @@
+using System.CommandLine;
 using System.Linq;
+using System.Threading.Tasks;
+using free_jira.Terminal.Profiles;
 
 namespace free_jira.Terminal
 {
@@ -8,12 +11,16 @@ namespace free_jira.Terminal
     /// </summary>
     public static class TerminalHandler
     {
-        public static bool HandleArgs(string[] args) {
+        public static async Task<int> HandleArgs(string[] args) {
             if (args.Count(e => e == "--server") == 1) {
-                return false;
+                return 0;
             }
 
-            return true;
+            var rootCommand = new RootCommand() {
+                ProfilesCommand.BuildProfileCommand(),
+            };
+
+            return await rootCommand.InvokeAsync(args);
         }
     }
 }

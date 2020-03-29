@@ -9,13 +9,14 @@ namespace free_jira
 {
     public class Program
     {
-        public static async Task Main(string[] args)
+        public static async Task<int> Main(string[] args)
         {
             var settings = await FreeJiraSettings.GetSettings();
-            if (args.Contains("--server") || settings.StartupMode == StartupMode.Server) {
+            if (args.Contains("--server") || (settings.StartupMode == StartupMode.Server) && !args.Contains("--terminal")) {
                 CreateHostBuilder(args, settings.ServerPort).Build().Run();
+                return 0;
             } else {
-                Terminal.TerminalHandler.HandleArgs(args);
+                return await Terminal.TerminalHandler.HandleArgs(args);
             }
         }
 
