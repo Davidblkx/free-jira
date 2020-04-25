@@ -9,7 +9,7 @@ using System.Text.Json;
 
 using static Optional.Option;
 
-namespace free_jira.Jira.Client
+namespace FreeJira.Jira.Client
 {
     public interface IJiraRestClient
     {

@@ -1,9 +1,9 @@
 using Xunit;
-using free_jira.Infra;
+using FreeJira.Infra;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace free_jira.tests.Infra
+namespace FreeJira.tests.Infra
 {
     public class FreeJiraSettingsTests
     {

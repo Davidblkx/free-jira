@@ -1,5 +1,5 @@
 using System;
-namespace free_jira.Jira.Profile
+namespace FreeJira.Jira.Profile.Sprint
 {
     public class JiraSprint
     {

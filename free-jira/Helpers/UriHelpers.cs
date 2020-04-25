@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System;
 using System.Linq;
-namespace free_jira.Helpers
+namespace FreeJira.Helpers
 {
     public static class UriHelpers
     {

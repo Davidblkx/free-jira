@@ -1,11 +1,11 @@
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using free_jira.Server;
-using free_jira.Infra;
+using FreeJira.Server;
+using FreeJira.Infra;
 using System.Threading.Tasks;
 
-namespace free_jira
+namespace FreeJira
 {
     public class Program
     {

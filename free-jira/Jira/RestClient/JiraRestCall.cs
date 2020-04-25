@@ -1,6 +1,6 @@
 using Optional;
 using RestSharp;
-namespace free_jira.Jira.Client
+namespace FreeJira.Jira.Client
 {
     public interface IJiraRestCall<TBody, TResponse>
     {

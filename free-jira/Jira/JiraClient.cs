@@ -1,6 +1,6 @@
-using free_jira.Jira.Client;
+using FreeJira.Jira.Client;
 
-namespace free_jira.Jira
+namespace FreeJira.Jira
 {
     public class JiraClient
     {
@@ -9,8 +9,6 @@ namespace free_jira.Jira
         public JiraClient(IJiraRestClient client) {
             RestClient = client;
         }
-
-        
 
         public static JiraClient FromBaseAuth(string user, string pass, string url) {
             return new JiraClient(JiraRestClient.FromBasicAuth(user, pass, url));

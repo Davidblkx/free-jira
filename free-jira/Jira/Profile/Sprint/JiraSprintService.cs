@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using LiteDB;
 
-namespace free_jira.Jira.Profile
+namespace FreeJira.Jira.Profile.Sprint
 {
     public interface IJiraSprintService
     {

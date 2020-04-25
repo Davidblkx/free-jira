@@ -19,10 +19,18 @@
             }
         },
         {
-            "name": ".NET Core Attach",
+            "name": "Start terminal",
             "type": "coreclr",
-            "request": "attach",
-            "processId": "${command:pickProcess}"
-        }
+            "request": "launch",
+            "preLaunchTask": "build",
+            // If you have changed target frameworks, make sure to update the program path.
+            "program": "${workspaceFolder}/free-jira/bin/Debug/netcoreapp3.1/free-jira.dll",
+            "args": ["--terminal"],
+            "cwd": "${workspaceFolder}/debug",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
     ]
 }

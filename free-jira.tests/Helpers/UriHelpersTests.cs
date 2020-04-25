@@ -1,8 +1,8 @@
 using System;
-using free_jira.Helpers;
+using FreeJira.Helpers;
 using Xunit;
 
-namespace free_jira.tests.Helpers
+namespace FreeJira.tests.Helpers
 {
     public class UriHelpersTests
     {

@@ -1,4 +1,4 @@
-namespace free_jira.Jira.Model
+namespace FreeJira.Jira.Model
 {
     public class JiraIssue<T> where T : class
     {

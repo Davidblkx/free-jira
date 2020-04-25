@@ -2,10 +2,10 @@ using System;
 using System.IO;
 using System.Text.Json.Serialization;
 using System.Text.Json;
-using free_jira.Helpers;
+using FreeJira.Helpers;
 using System.Threading.Tasks;
 
-namespace free_jira.Infra
+namespace FreeJira.Infra
 {
     public interface IFreeJiraSettings
     {
@@ -32,7 +32,7 @@ namespace free_jira.Infra
     }
 
     /// <summary>
-    /// Handles all application settings
+    /// Handles base application settings
     /// </summary>
     public class FreeJiraSettings : IFreeJiraSettings
     {

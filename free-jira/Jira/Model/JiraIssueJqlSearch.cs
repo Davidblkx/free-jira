@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using free_jira.Jira.Client;
+using FreeJira.Jira.Client;
 using Optional;
 using RestSharp;
 
 using static Optional.Option;
 
-namespace free_jira.Jira.Model
+namespace FreeJira.Jira.Model
 {
     public class JiraIssueJqlSearch<T> : 
         IJiraRestCall<JiraIssueJqlSearch<T>.Params, JiraIssueJqlResponse<T>> 

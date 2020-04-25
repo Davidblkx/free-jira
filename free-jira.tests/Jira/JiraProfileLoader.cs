@@ -1,8 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using free_jira.Jira.Profile;
+using FreeJira.Jira.Profile;
+using FreeJira.Jira.Profile.Sprint;
+using FreeJira.Jira.Profile.Unit;
 
-namespace free_jira.tests.Jira
+namespace FreeJira.tests.Jira
 {
     public static class JiraProfileLoader
     {
@@ -22,7 +24,8 @@ namespace free_jira.tests.Jira
         }
 
         public static async Task<bool> CleanProfile(string name) {
-            var file = await JiraProfileService.GetProfilePath(name);
+            var sett = await FreeJira.Infra.FreeJiraSettings.GetSettings();
+            var file = ProfilePath.GetProfilePath(sett, name);
             if (file.Exists) {
                 file.Delete();
                 return true;

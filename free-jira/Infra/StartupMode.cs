@@ -1,4 +1,4 @@
-namespace free_jira.Infra
+namespace FreeJira.Infra
 {
     public enum StartupMode
     {

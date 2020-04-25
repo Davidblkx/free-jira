@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using free_jira.Jira.Profile;
+using FreeJira.Jira.Profile;
 
-namespace free_jira.Terminal.Profiles
+namespace FreeJira.Terminal.Profiles
 {
     public class ProfilesCreate
     {

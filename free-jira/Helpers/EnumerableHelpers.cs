@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Collections.Generic;
 
-namespace free_jira.Helpers
+namespace FreeJira.Helpers
 {
     public static class EnumerableHelpers
     {

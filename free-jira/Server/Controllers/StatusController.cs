@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace free_jira.Server.Controllers
+namespace FreeJira.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]

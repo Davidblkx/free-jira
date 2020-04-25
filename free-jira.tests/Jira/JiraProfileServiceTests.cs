@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using free_jira.Jira.Profile;
+using FreeJira.Jira.Profile;
 using Xunit;
 
-namespace free_jira.tests.Jira
+namespace FreeJira.tests.Jira
 {
     public class JiraProfileServiceTests
     {

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-namespace free_jira.Jira.Model
+namespace FreeJira.Jira.Model
 {
     public class JiraIssueJqlResponse<T> where T : class
     {

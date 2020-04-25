@@ -23,7 +23,7 @@
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$msCompile",
         },
         {
             "label": "watch",
@@ -31,12 +31,14 @@
             "type": "process",
             "args": [
                 "watch",
-                "run",
+                "--project",
                 "${workspaceFolder}/free-jira/free-jira.csproj",
+                "run",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$msCompile",
+            "group": "build"
         },
         {
             "label": "publish-pack",

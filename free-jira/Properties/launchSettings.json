@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "free_jira": {
+    "FreeJira": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "weatherforecast",

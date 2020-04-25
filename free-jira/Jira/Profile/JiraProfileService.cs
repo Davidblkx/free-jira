@@ -1,11 +1,12 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System;
-using free_jira.Infra;
-using free_jira.Helpers;
+using FreeJira.Infra;
 using LiteDB;
-namespace free_jira.Jira.Profile
+using FreeJira.Jira.Profile.Sprint;
+using FreeJira.Jira.Profile.Unit;
+
+namespace FreeJira.Jira.Profile
 {
     public interface IJiraProfileService
     {
@@ -62,11 +63,7 @@ namespace free_jira.Jira.Profile
         /// <param name="password"></param>
         /// <returns></returns>
         public static async Task<IJiraProfileService> Load(string profileName, string password = "") {
-            var dbPath = await GetProfilePath(profileName);
-            
-            if (!dbPath.Directory.Exists) { dbPath.Directory.Create(); }
-
-            return FromPath(dbPath.FullName, password);
+            return await FromName(profileName, password);
         }
 
         /// <summary>
@@ -76,36 +73,22 @@ namespace free_jira.Jira.Profile
         /// <param name="password"></param>
         /// <returns></returns>
         public static async Task<IJiraProfileService> Create(JiraProfile profile, string password = "") {
-            var dbPath = await GetProfilePath(profile.ProfileName);
-
-            if (!dbPath.Directory.Exists) { dbPath.Directory.Create(); }
-            
-            var service = FromPath(dbPath.FullName, password);
-
+            var service = await FromName(profile.ProfileName, password);
             service.SetProfile(profile);
-
             return service;
         }
 
-        /// <summary>
-        /// Returns path to profile file
-        /// </summary>
-        /// <param name="profileName"></param>
-        /// <returns></returns>
-        public static async Task<FileInfo> GetProfilePath(string profileName) {
+        private static async Task<JiraProfileService> FromName(string profileName, string password) {
             var settings = await FreeJiraSettings.GetSettings();
-            var path = profileName.LastIndexOf(".db") == (profileName.Length - 3)
-                ? profileName : profileName + ".db";
-            return settings.Folder.RelativeFile("profiles", path);
+            var profilePath = GetAndCreateProfileFolder(settings, profileName);
+            var db = ProfilePath.GetDatabase(settings, profileName, password);
+            return new JiraProfileService(db, profilePath);
         }
 
-        private static JiraProfileService FromPath(string path, string password) {
-            var fullPath = new FileInfo(path).Extension
-                == ".db" ? path : path + ".db";
-            var passwordQuery = string.IsNullOrEmpty(password) ? "" : "Password={password};";
-            var connectionString = $"Filename={fullPath};{passwordQuery}Connection=Shared";
-            var db = new LiteDatabase(connectionString);
-            return new JiraProfileService(db, new FileInfo(fullPath));
+        private static FileInfo GetAndCreateProfileFolder(IFreeJiraSettings settings, string profileName) {
+            var path = ProfilePath.GetProfilePath(settings, profileName);
+            if (!path.Directory.Exists) { path.Directory.Create(); }
+            return path;
         }
 
         protected void SetProfile(JiraProfile profile) {

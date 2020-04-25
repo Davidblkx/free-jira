@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
-using free_jira.Jira.Client;
-using free_jira.Jira.Model;
+using FreeJira.Jira.Client;
+using FreeJira.Jira.Model;
 using Optional;
 
-namespace free_jira.Jira
+namespace FreeJira.Jira
 {
     public class JiraIssueClient
     {

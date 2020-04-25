@@ -1,4 +1,4 @@
-namespace free_jira.Jira.Client
+namespace FreeJira.Jira.Client
 {
     public enum JiraRestVersion
     {

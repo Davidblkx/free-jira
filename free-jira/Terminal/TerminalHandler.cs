@@ -1,9 +1,9 @@
 using System.CommandLine;
 using System.Linq;
 using System.Threading.Tasks;
-using free_jira.Terminal.Profiles;
+using FreeJira.Terminal.Profiles;
 
-namespace free_jira.Terminal
+namespace FreeJira.Terminal
 {
     /// <summary>
     /// Handle arguments for console interation,
