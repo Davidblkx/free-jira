@@ -5,6 +5,7 @@ using System;
 using FreeJira.Infra;
 using LiteDB;
 using FreeJira.Jira.Profile.Sprint;
+using System.Linq;
 
 namespace FreeJira.Jira.Profile
 {
@@ -111,6 +112,18 @@ namespace FreeJira.Jira.Profile
                 return true;
             }
             return false;
+        }
+
+        public static async Task<bool> SetDefaultProfile(string profileName) {
+            var exist = (await JiraProfileService.GetAvailableProfiles())
+                .Any(p => p == profileName);
+
+            if (!exist) return false;
+
+            var settings = FreeJiraSettings.FromInterface(await GetSettings());
+            settings.DefaultProfile = profileName;
+            await FreeJiraSettings.UpdateSettings(settings);
+            return true;
         }
 
         public static async Task<string> GetDefaultProfileName() {
