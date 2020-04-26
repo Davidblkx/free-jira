@@ -1,14 +1,26 @@
 using System;
 namespace FreeJira.Jira.Profile.Sprint
 {
-    public class JiraSprint
+    /// <summary>
+    /// Allow to group results by a time interval
+    /// </summary>
+    public interface IJiraSprint
+    {
+        string IdName { get; }
+        string Name { get; }
+        DateTime Start { get; }
+        DateTime End { get; }
+    }
+
+    public class JiraSprint : IJiraSprint
     {
         public string IdName { get; }
         public string Name { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
 
-        public JiraSprint(string name, DateTime start, DateTime end) {
+        public JiraSprint(string name, DateTime start, DateTime end)
+        {
             IdName = GetSprintIdFromName(name);
             Name = name;
             Start = start;
@@ -20,7 +32,8 @@ namespace FreeJira.Jira.Profile.Sprint
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static string GetSprintIdFromName(string name) {
+        public static string GetSprintIdFromName(string name)
+        {
             return name.ToLower().Trim().Replace(' ', '_');
         }
     }

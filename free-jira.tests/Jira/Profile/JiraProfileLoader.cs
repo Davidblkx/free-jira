@@ -2,9 +2,8 @@ using System;
 using System.Threading.Tasks;
 using FreeJira.Jira.Profile;
 using FreeJira.Jira.Profile.Sprint;
-using FreeJira.Jira.Profile.Unit;
 
-namespace FreeJira.tests.Jira
+namespace FreeJira.tests.Jira.Profile
 {
     public static class JiraProfileLoader
     {

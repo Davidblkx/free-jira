@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using FreeJira.Jira.Profile;
 using Xunit;
 
-namespace FreeJira.tests.Jira
+namespace FreeJira.tests.Jira.Profile
 {
     public class JiraProfileServiceTests
     {

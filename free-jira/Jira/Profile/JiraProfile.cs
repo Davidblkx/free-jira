@@ -1,6 +1,9 @@
 using System;
 namespace FreeJira.Jira.Profile
 {
+    /// <summary>
+    /// Connection details for a Jira instance
+    /// </summary>
     public interface IJiraProfile
     {
         string ProfileName { get; }

@@ -2,23 +2,17 @@ using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Threading.Tasks;
-using FreeJira.Infra;
-using FreeJira.Helpers;
-using FreeJira.Jira.Profile.Unit;
+using FreeJira.Jira.Profile;
 
-namespace FreeJira.Terminal.Profiles
+namespace FreeJira.Terminal.Profiles.Commands
 {
-    public class ProfilesCommand
+    public static class ProfileList
     {
-        public static Command BuildProfileCommand() {
-            var cmd = new Command("profile") { Description = "Profile related actions" };
-
+        public static Command GetListCommand() {
             var list = new Command("list") { Description = "List all available profiles" };
             list.Handler = CommandHandler.Create(ListProfiles);
             list.AddAlias("ls");
-            cmd.AddCommand(list);
-
-            return cmd;
+            return list;
         }
 
         /// <summary>
@@ -26,10 +20,9 @@ namespace FreeJira.Terminal.Profiles
         /// </summary>
         /// <returns></returns>
         private static async Task ListProfiles() {
-            var settings = await FreeJiraSettings.GetSettings();
-
-            foreach (var p in ProfilePath.GetAvailableProfiles(settings)) {
-                string isDefault() => settings.DefaultProfile == p ? " * " : "";
+            var defaultProfile = await JiraProfileService.GetDefaultProfileName();
+            foreach (var p in await JiraProfileService.GetAvailableProfiles()) {
+                string isDefault() => defaultProfile == p ? " * " : "";
                 Console.WriteLine(" -> "  + p + isDefault());
             }
         }

@@ -1,7 +1,11 @@
 using System.CommandLine;
 using System.Linq;
 using System.Threading.Tasks;
+using ConsoleInteractive;
+using FreeJira.Terminal.Components;
+using FreeJira.Terminal.Converters;
 using FreeJira.Terminal.Profiles;
+using FreeJira.Terminal.Validators;
 
 namespace FreeJira.Terminal
 {
@@ -16,11 +20,23 @@ namespace FreeJira.Terminal
                 return 0;
             }
 
+            InitTerminal();
             var rootCommand = new RootCommand() {
-                ProfilesCommand.BuildProfileCommand(),
+                TerminalProfileService.BuildProfileCommand(),
             };
+            rootCommand.AddGlobalOption(
+                new Option("--terminal", "run in terminal mode"));
+            rootCommand.AddGlobalOption(
+                new Option("--server", "run in server mode"));
 
             return await rootCommand.InvokeAsync(args);
+        }
+
+        private static void InitTerminal() {
+            ConsoleI.RegisterDefaults();
+            TerminalValidators.Register();
+            TerminalConverters.Register();
+            TerminalComponentsImpl.Register();
         }
     }
 }

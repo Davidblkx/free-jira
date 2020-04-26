@@ -1,12 +1,17 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using FreeJira.Helpers;
 using FreeJira.Infra;
 using LiteDB;
 
-namespace FreeJira.Jira.Profile.Unit
+[assembly:InternalsVisibleTo("free-jira.tests")]
+namespace FreeJira.Jira.Profile
 {
-    public static class ProfilePath
+    /// <summary>
+    /// Pure function to handle path related logic for JiraProfile
+    /// </summary>
+    internal static class ProfilePath
     {
         public const string PROFILE_DEFAULT_FOLDER_NAME = "profiles";
         public const string PROFILE_FILE_EXTENSION = ".db";
@@ -42,7 +47,7 @@ namespace FreeJira.Jira.Profile.Unit
         /// <returns></returns>
         public static string GetProfileDBConnectionString(IFreeJiraSettings settings, string profileName, string? password = null) {
             var profilePath = GetProfilePath(settings, profileName).FullName;
-            var passwordQuery = string.IsNullOrEmpty(password) ? "" : "Password={password};";
+            var passwordQuery = string.IsNullOrEmpty(password) ? "" : $"Password={password};";
             return $"Filename={profilePath};{passwordQuery}Connection=Shared";
         }
 

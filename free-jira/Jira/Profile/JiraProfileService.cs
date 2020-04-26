@@ -1,10 +1,10 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System;
 using FreeJira.Infra;
 using LiteDB;
 using FreeJira.Jira.Profile.Sprint;
-using FreeJira.Jira.Profile.Unit;
 
 namespace FreeJira.Jira.Profile
 {
@@ -14,6 +14,7 @@ namespace FreeJira.Jira.Profile
 
         JiraProfile GetProfile();
         IJiraSprintService GetSprintService();
+        Task SetAsDefault();
 
         void Dispose();
     }
@@ -24,7 +25,7 @@ namespace FreeJira.Jira.Profile
     /// </summary>
     public class JiraProfileService : IDisposable, IJiraProfileService
     {
-        protected static readonly string COLLECTION_PROFILES = "PROFILES";
+        protected const string COLLECTION_PROFILES = "PROFILES";
         
         private readonly LiteDatabase _db;
 
@@ -54,6 +55,16 @@ namespace FreeJira.Jira.Profile
             return new JiraSprintService(this);
         }
 
+        /// <summary>
+        /// Set current profile as default
+        /// </summary>
+        /// <returns></returns>
+        public async Task SetAsDefault() {
+            var settings = FreeJiraSettings.FromInterface(await GetSettings());
+            settings.DefaultProfile = GetProfile().ProfileName;
+            await FreeJiraSettings.UpdateSettings(settings);
+        }
+
         public void Dispose() { _db.Dispose(); }
 
         /// <summary>
@@ -72,14 +83,42 @@ namespace FreeJira.Jira.Profile
         /// <param name="profile"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public static async Task<IJiraProfileService> Create(JiraProfile profile, string password = "") {
+        public static async Task<IJiraProfileService> Create(IJiraProfile profile, string password = "") {
             var service = await FromName(profile.ProfileName, password);
-            service.SetProfile(profile);
+            service.SetProfile(JiraProfile.From(profile));
             return service;
         }
 
+        /// <summary>
+        /// Return list of available profiles
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<IEnumerable<string>> GetAvailableProfiles() {
+            var settings = await GetSettings();
+            return ProfilePath.GetAvailableProfiles(settings);
+        }
+        
+        /// <summary>
+        /// Delete profile by name
+        /// </summary>
+        /// <param name="profileName"></param>
+        /// <returns></returns>
+        public static async Task<bool> DeleteProfile(string profileName) {
+            var settings = await GetSettings();
+            var profilePath = GetAndCreateProfileFolder(settings, profileName);
+            if (profilePath?.Exists ?? false){
+                profilePath.Delete();
+                return true;
+            }
+            return false;
+        }
+
+        public static async Task<string> GetDefaultProfileName() {
+            return (await GetSettings()).DefaultProfile;
+        }
+
         private static async Task<JiraProfileService> FromName(string profileName, string password) {
-            var settings = await FreeJiraSettings.GetSettings();
+            var settings = await GetSettings();
             var profilePath = GetAndCreateProfileFolder(settings, profileName);
             var db = ProfilePath.GetDatabase(settings, profileName, password);
             return new JiraProfileService(db, profilePath);
@@ -90,6 +129,9 @@ namespace FreeJira.Jira.Profile
             if (!path.Directory.Exists) { path.Directory.Create(); }
             return path;
         }
+
+        private static Task<IFreeJiraSettings> GetSettings()
+            => FreeJiraSettings.GetSettings();
 
         protected void SetProfile(JiraProfile profile) {
             _db.DropCollection(COLLECTION_PROFILES);

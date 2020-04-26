@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using FreeJira.Jira.Profile.Unit;
+using FreeJira.Jira.Profile;
 using Xunit;
 using Moq;
 using FreeJira.Infra;
