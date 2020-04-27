@@ -11,8 +11,8 @@ namespace FreeJira.Terminal.Profiles.Model
     {
         [FormEntry(Priority = 0, ProviderKey = nameof(ProfileName))]
         public string ProfileName { get; set; } = "";
-        [FormEntry(Priority = 1, ProviderKey = nameof(ProfilePassword))]
-        public string? ProfilePassword { get; set; }
+        // [FormEntry(Priority = 1, ProviderKey = nameof(ProfilePassword))]
+        // public string? ProfilePassword { get; set; }
         [FormEntry(Priority = 2, ProviderKey = nameof(User))]
         public string User { get; set; } = "";
         [FormEntry(Priority = 3, ProviderKey = nameof(Pass))]
@@ -36,8 +36,8 @@ namespace FreeJira.Terminal.Profiles.Model
             var name = InputText.Create("Profile name:", "", required);
             ComponentsProvider.Global.Register(nameof(ProfileName), name);
 
-            var pass = InputText.Create("Profile password [Empty to ignore]:", "");
-            ComponentsProvider.Global.Register(nameof(ProfilePassword), pass);
+            // var pass = InputText.Create("Profile password [Empty to ignore]:", "");
+            // ComponentsProvider.Global.Register(nameof(ProfilePassword), pass);
 
             var user = InputText.Create("Jira username/email:", "", required);
             ComponentsProvider.Global.Register(nameof(User), user);

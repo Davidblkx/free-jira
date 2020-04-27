@@ -22,8 +22,7 @@ namespace FreeJira.Terminal.Profiles.Commands
             var profile = await ConsoleI.RenderForm<TerminalJiraProfile>();
             var isDefault = ConsoleI.AskConfirmation("Set as default profile");
 
-            var service = await JiraProfileService
-                .Create(profile, profile.ProfilePassword ?? "");
+            var service = await JiraProfileService.Create(profile, "");
 
             Console.WriteLine("Created profile " + profile.ProfileName);
             

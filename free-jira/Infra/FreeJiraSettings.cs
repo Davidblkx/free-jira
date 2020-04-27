@@ -36,6 +36,7 @@ namespace FreeJira.Infra
     /// </summary>
     public class FreeJiraSettings : IFreeJiraSettings
     {
+        public const string SETTINGS_FILE_NAME = "settings.json";
         private static IFreeJiraSettings? _settings;
 
         public string BaseFolder { get; set; } = "~";
@@ -72,17 +73,21 @@ namespace FreeJira.Infra
         public async static Task<IFreeJiraSettings> GetSettings() {
             if (!(_settings is null)) { return _settings; }
 
-            var settingsFile = InitSettings();
-            var fileStream = File.OpenRead(settingsFile);
-            _settings = await JsonSerializer.DeserializeAsync<FreeJiraSettings>(fileStream);
+            var settingsFile = GetSettingsFile();
+            await InitSettings(settingsFile);
+
+            var fileStream = File.OpenRead(settingsFile.FullName);
+            _settings = await JsonSerializer
+                .DeserializeAsync<FreeJiraSettings>(fileStream);
             fileStream.Close();
+
             return _settings;
         }
 
-        public static Task<IFreeJiraSettings> UpdateSettings(FreeJiraSettings settings) {
-            SaveSettings(settings);
+        public static async Task<IFreeJiraSettings> UpdateSettings(FreeJiraSettings settings) {
+            await SaveSettings(settings);
             _settings = null;
-            return GetSettings();
+            return await GetSettings();
         }
 
         public static FreeJiraSettings FromInterface(IFreeJiraSettings settings) {
@@ -95,14 +100,18 @@ namespace FreeJira.Infra
         }
 
         /// <summary>
-        /// Load setting file Path, if no file exists, one is created
+        /// set settings file with default values
         /// </summary>
         /// <returns></returns>
-        private static string InitSettings() {
-            var baseFolder = PathHelpers.GetSettingsFolderPath();
-            var settings = new FreeJiraSettings() { BaseFolder = baseFolder };
+        private static async Task InitSettings(FileInfo file) {
+            if (!file.Directory.Exists)
+                file.Directory.Create();
 
-            return SaveSettings(settings);
+            if (!file.Exists) {
+                var settings = new FreeJiraSettings() {
+                    BaseFolder = file.Directory.FullName };
+                await SaveSettings(settings);
+            }
         }
 
         /// <summary>
@@ -110,21 +119,34 @@ namespace FreeJira.Infra
         /// </summary>
         /// <param name="settings"></param>
         /// <returns></returns>
-        private static string SaveSettings(FreeJiraSettings settings) {
+        private static async Task<bool> SaveSettings(FreeJiraSettings settings) {
+            var file = GetSettingsFile();
+            var json = SerializeSettings(settings);
+            
+            try {
+                await File.WriteAllTextAsync(file.FullName, json);
+                return true;
+            } catch { }
+            
+            return false;
+        }
+
+        /// <summary>
+        /// Return the settings file info
+        /// </summary>
+        /// <returns></returns>
+        private static FileInfo GetSettingsFile() {
             var baseFolder = PathHelpers.GetSettingsFolderPath();
-            var settingsFile = Path.Combine(baseFolder, "settings.json");
-            if (!Directory.Exists(baseFolder))
-            { Directory.CreateDirectory(baseFolder); }
+            var settingsFilePath = Path.Combine(baseFolder, SETTINGS_FILE_NAME);
+            var file = new FileInfo(settingsFilePath);
+            return file;
+        }
 
-            if (!File.Exists(settingsFile)) {
-                var jsonBody = JsonSerializer.Serialize(
-                    settings,
-                    new JsonSerializerOptions() { WriteIndented = true }
-                );
-                File.WriteAllText(settingsFile, jsonBody);
-            }
-
-            return settingsFile;
+        private static string SerializeSettings(FreeJiraSettings settings) {
+            return JsonSerializer.Serialize(
+                settings,
+                new JsonSerializerOptions() { WriteIndented = true }
+            );
         }
     }
 }

@@ -29,13 +29,16 @@ namespace FreeJira.Jira.Profile
         protected const string COLLECTION_PROFILES = "PROFILES";
         
         private readonly LiteDatabase _db;
+        private readonly ILiteCollection<JiraProfile> _collection;
+
+        public LiteDatabase Db { get { return _db; }}
 
         public FileInfo DbPath { get; }
-        public LiteDatabase Db => _db;
 
         public JiraProfileService(LiteDatabase db, FileInfo path) { 
             _db = db;
             DbPath = path;
+            _collection = _db.GetCollection<JiraProfile>(COLLECTION_PROFILES);
         }
 
         /// <summary>
@@ -43,9 +46,7 @@ namespace FreeJira.Jira.Profile
         /// </summary>
         /// <returns></returns>
         public JiraProfile GetProfile() {
-            var col = _db.GetCollection<JiraProfile>(COLLECTION_PROFILES);
-            var count = col.Count();
-            return col.FindOne(e => e.User != "");
+            return _collection.FindOne(e => e.User != "");
         }
 
         /// <summary>
@@ -115,7 +116,7 @@ namespace FreeJira.Jira.Profile
         }
 
         public static async Task<bool> SetDefaultProfile(string profileName) {
-            var exist = (await JiraProfileService.GetAvailableProfiles())
+            var exist = (await GetAvailableProfiles())
                 .Any(p => p == profileName);
 
             if (!exist) return false;
@@ -147,9 +148,9 @@ namespace FreeJira.Jira.Profile
             => FreeJiraSettings.GetSettings();
 
         protected void SetProfile(JiraProfile profile) {
-            _db.DropCollection(COLLECTION_PROFILES);
-            var profiles = _db.GetCollection<JiraProfile>(COLLECTION_PROFILES);
-            profiles.Insert(profile);
+            _collection.DeleteMany(e => e.User != "");
+            _collection.Insert(profile);
+            _db.Commit();
         }
     }
 }
