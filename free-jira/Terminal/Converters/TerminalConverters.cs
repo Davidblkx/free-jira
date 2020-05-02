@@ -11,7 +11,7 @@ namespace FreeJira.Terminal.Converters
         public static void Register()
         {
             StringConverterProvider.Global.Register(new UriConverter(), true);
-            StringConverterProvider.Global.Register(typeof(Uri), new UriConverter(), true);
+            StringConverterProvider.Global.Register(new DateConverter(), true);
         }
     }
 }

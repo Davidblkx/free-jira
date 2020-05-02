@@ -7,6 +7,7 @@ namespace FreeJira.Jira.Profile.Sprint
     public interface IJiraSprintService
     {
         bool CreateSprint(string name, DateTime start, DateTime end);
+        bool CreateSprint(IJiraSprint sprint);
         bool DeleteSprint(string name);
         JiraSprint? GetActiveSprint();
         JiraSprint? GetSprintByName(string name);
@@ -64,6 +65,10 @@ namespace FreeJira.Jira.Profile.Sprint
             }
 
             return false;
+        }
+
+        public bool CreateSprint(IJiraSprint sprint) {
+            return CreateSprint(sprint.Name, sprint.Start, sprint.End);
         }
 
         /// <summary>
