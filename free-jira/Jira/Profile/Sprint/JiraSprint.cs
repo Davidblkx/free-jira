@@ -27,6 +27,12 @@ namespace FreeJira.Jira.Profile.Sprint
             End = end;
         }
 
+        public override string ToString() {
+            var start = Start.ToString("yyyy-MM-dd");
+            var end = End.ToString("yyyy-MM-dd");
+            return $"{Name} [{start}] -> [{end}]";
+        }
+
         /// <summary>
         /// Returns sprint ID based on name
         /// </summary>

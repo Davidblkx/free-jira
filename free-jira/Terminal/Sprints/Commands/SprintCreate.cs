@@ -17,7 +17,7 @@ namespace FreeJira.Terminal.Sprints.Commands
         }
 
         public static async Task CreateSprint(string? profile) {
-            var service = await ProfileHelpers.GetJiraProfileService(profile);
+            var service = await ProfileHelpers.GetJiraSprintService(profile);
 
             if (service is null) { 
                 Console.WriteLine("Can't find default profile"); return; }
@@ -27,7 +27,6 @@ namespace FreeJira.Terminal.Sprints.Commands
                 Console.WriteLine("Sprint is invalid"); return; }
 
             var success = service
-                .GetSprintService()
                 .CreateSprint(sprint);
 
             if (success) {

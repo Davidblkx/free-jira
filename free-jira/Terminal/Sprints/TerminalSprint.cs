@@ -13,6 +13,7 @@ namespace FreeJira.Terminal.Sprints
             cmd.AddOption(optionProfile);
 
             cmd.AddCommand(SprintCreateCommand.Build());
+            cmd.AddCommand(SprintListCommand.Build());
 
             return cmd;
         }
