@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using RestSharp;
 using RestSharp.Authenticators;
+using RestSharp.Serializers.SystemTextJson;
 using System;
 using Optional;
 using System.Text.Json;
@@ -31,10 +32,7 @@ namespace FreeJira.Jira.Client
         {
             Authenticator = authenticator;
             JiraServelUrl = new Uri(url);
-            _client = new RestClient(JiraServelUrl)
-            {
-                Authenticator = authenticator
-            };
+            _client = BuildClient(JiraServelUrl, authenticator);
         }
 
         /// <summary>
@@ -66,9 +64,12 @@ namespace FreeJira.Jira.Client
             try
             {
                 using var stream = new MemoryStream(res.RawBytes);
-                return Some(await JsonSerializer.DeserializeAsync<TResponse>(stream));
+                return Some(await JsonSerializer.DeserializeAsync<TResponse>(stream, BuildJsonOptions()));
             }
-            catch { return None<TResponse>(); }
+            catch (Exception e) { 
+                Console.WriteLine(e.Message);
+                return None<TResponse>(); 
+            }
         }
 
         /// <summary>
@@ -88,10 +89,28 @@ namespace FreeJira.Jira.Client
 
         private RestRequest FromRestCall<TBody, TResponse>(IJiraRestCall<TBody, TResponse> restCall)
         {
-            var url = $"/rest/api/{restCall.Version}/{restCall.Endpoint}";
+            var url = $"/rest/api/{(int)restCall.Version}/{restCall.Endpoint}";
             var req = new RestRequest(url, restCall.Method, DataFormat.Json);
             restCall.Body.MatchSome(e => req.AddJsonBody(e));
             return req;
+        }
+
+        private RestClient BuildClient(Uri baseUrl, IAuthenticator authenticator) {
+            var cli = new RestClient(baseUrl);
+            var jsonOptions = BuildJsonOptions();
+            cli.UseSystemTextJson(jsonOptions);
+            cli.Authenticator = authenticator;
+            return cli;
+        }
+
+        private JsonSerializerOptions BuildJsonOptions() {
+            return new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true,
+                IgnoreNullValues = true,
+                WriteIndented = true,
+            };
         }
     }
 }

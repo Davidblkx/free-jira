@@ -9,6 +9,7 @@ using ConsoleInteractive;
 using FreeJira.Jira.Profile;
 using FreeJira.Terminal.Components;
 using FreeJira.Terminal.Converters;
+using FreeJira.Terminal.Jql;
 using FreeJira.Terminal.Profiles;
 using FreeJira.Terminal.Sprints;
 using FreeJira.Terminal.Validators;
@@ -30,6 +31,7 @@ namespace FreeJira.Terminal
             var rootCommand = new RootCommand() {
                 TerminalProfileService.BuildProfileCommand(),
                 TerminalSprintService.BuildSprintCommand(),
+                TerminalJqlService.BuildCommand()
             };
 
             rootCommand.AddOption(
@@ -37,6 +39,7 @@ namespace FreeJira.Terminal
 
             return await new CommandLineBuilder(rootCommand)
                 .UseMiddleware(CheckProfilesCount)
+                .UseHelp()
                 .Build().InvokeAsync(args);
         }
 

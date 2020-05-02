@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using FreeJira.Jira;
 using FreeJira.Jira.Profile;
 using FreeJira.Jira.Profile.Sprint;
 
@@ -21,5 +22,8 @@ namespace FreeJira.Helpers
 
         public static async Task<IJiraSprintService?> GetJiraSprintService(string? profile)
             => (await GetJiraProfileService(profile))?.GetSprintService();
+
+        public static async Task<JiraClient?> GetJiraClient(string? profile)
+            => (await GetJiraProfileService(profile))?.GetJiraClient();
     }
 }

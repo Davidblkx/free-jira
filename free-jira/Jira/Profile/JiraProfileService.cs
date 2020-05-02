@@ -16,6 +16,7 @@ namespace FreeJira.Jira.Profile
         JiraProfile GetProfile();
         IJiraSprintService GetSprintService();
         Task SetAsDefault();
+        JiraClient GetJiraClient();
 
         void Dispose();
     }
@@ -55,6 +56,15 @@ namespace FreeJira.Jira.Profile
         /// <returns></returns>
         public IJiraSprintService GetSprintService() {
             return new JiraSprintService(this);
+        }
+
+        /// <summary>
+        /// Return JiraClient for current profile
+        /// </summary>
+        /// <returns></returns>
+        public JiraClient GetJiraClient() {
+            var p = GetProfile();
+            return JiraClient.FromBaseAuth(p.User, p.Pass, p.Url);
         }
 
         /// <summary>

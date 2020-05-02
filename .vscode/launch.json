@@ -25,7 +25,7 @@
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceFolder}/free-jira/bin/Debug/netcoreapp3.1/free-jira.dll",
-            "args": ["sprint", "--profile", "dires", "create"],
+            "args": ["jql", "worklogAuthor = d.pires && worklogDate >= \"2020-04-27\""],
             "cwd": "${workspaceFolder}/debug",
             "stopAtEntry": false,
             "env": {

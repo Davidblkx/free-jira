@@ -13,7 +13,7 @@ namespace FreeJira.Jira
             _restClient = restClient;
         }
         
-        public Task<Option<JiraIssueJqlResponse<T>>> Jql<T>(string jql) where T : class {
+        public Task<Option<JiraIssueJqlResponse<T>>> Jql<T>(string jql, T? _) where T : class {
             var request = JiraIssueJqlSearch<T>.FromType(jql);
             return _restClient.ExecuteAsync(request);
         }
