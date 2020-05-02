@@ -14,6 +14,7 @@ namespace FreeJira.Terminal.Sprints
 
             cmd.AddCommand(SprintCreateCommand.Build());
             cmd.AddCommand(SprintListCommand.Build());
+            cmd.AddCommand(SprintDeleteCommand.Build());
 
             return cmd;
         }
