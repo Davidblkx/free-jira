@@ -11,6 +11,7 @@ using FreeJira.Terminal.Components;
 using FreeJira.Terminal.Converters;
 using FreeJira.Terminal.Jql;
 using FreeJira.Terminal.Profiles;
+using FreeJira.Terminal.Reports;
 using FreeJira.Terminal.Sprints;
 using FreeJira.Terminal.Validators;
 
@@ -31,7 +32,8 @@ namespace FreeJira.Terminal
             var rootCommand = new RootCommand() {
                 TerminalProfileService.BuildProfileCommand(),
                 TerminalSprintService.BuildSprintCommand(),
-                TerminalJqlService.BuildCommand()
+                TerminalJqlService.BuildCommand(),
+                TerminalReportHandler.BuildCommand()
             };
 
             rootCommand.AddOption(
