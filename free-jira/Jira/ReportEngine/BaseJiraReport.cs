@@ -72,6 +72,10 @@ namespace FreeJira.Jira.ReportEngine
 
         public abstract Task<string> ToCSV((IEnumerable<TRow>, Dictionary<string, string>) result);
 
+        public override string ToString() {
+            return $"{Name}: {Description}";
+        }
+
         /// <summary>
         /// Build jql to query JIRA
         /// </summary>

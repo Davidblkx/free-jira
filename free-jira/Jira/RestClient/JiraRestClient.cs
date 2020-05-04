@@ -7,6 +7,7 @@ using RestSharp.Serializers.SystemTextJson;
 using System;
 using Optional;
 using System.Text.Json;
+using Newtonsoft.Json;
 
 using static Optional.Option;
 
@@ -63,8 +64,7 @@ namespace FreeJira.Jira.Client
             if (!res.IsSuccessful) return None<TResponse>();
             try
             {
-                using var stream = new MemoryStream(res.RawBytes);
-                return Some(await JsonSerializer.DeserializeAsync<TResponse>(stream, BuildJsonOptions()));
+                return Some(JsonConvert.DeserializeObject<TResponse>(res.Content));
             }
             catch (Exception e) { 
                 Console.WriteLine(e.Message);

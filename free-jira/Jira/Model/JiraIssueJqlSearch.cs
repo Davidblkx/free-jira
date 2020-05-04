@@ -28,7 +28,7 @@ namespace FreeJira.Jira.Model
             var data = new Params { Jql = jql };
 
             foreach (var p in typeof(T).GetProperties()) {
-                data.Fields.Add(p.Name);
+                data.Fields.Add(char.ToLowerInvariant(p.Name[0]) + p.Name.Substring(1));
             }
             
             req.Body = Some(data);

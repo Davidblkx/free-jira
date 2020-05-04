@@ -107,7 +107,8 @@ namespace FreeJira.Reports
             => Task.Run(() => {
                 var list = new List<UserWorklogReportRow>();
                 
-                var worklogs = issue.Fields?.Worklog?.Worklogs;
+                var worklogs = issue.Fields?.Worklog?.Worklogs
+                    .Where(w => IsInInterval(w?.Started));
                 if (worklogs is null) return list;
 
                 foreach(var w in worklogs)
@@ -127,5 +128,14 @@ namespace FreeJira.Reports
                         .Sum(e => e.TotalHours)
                         .ToString() + "h",
                 });
+
+        private bool IsInInterval(DateTime? date) {
+            if (date is null) return false;
+            var start = DateTime.Parse(GetStartDate());
+            var end = DateTime.Parse(GetEndDate());
+            end.AddHours(23);
+
+            return date >= start && date <= end;
+        }
     }
 }
