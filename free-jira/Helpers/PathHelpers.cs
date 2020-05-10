@@ -15,6 +15,10 @@ namespace FreeJira.Helpers
             return Environment.GetFolderPath(SpecialFolder.ApplicationData);
         }
 
+        public static string? GetUnixHomeDir() {
+            return Environment.GetFolderPath(SpecialFolder.UserProfile);
+        }
+
         /// <summary>
         /// Folder to save settings
         /// </summary>
@@ -24,7 +28,12 @@ namespace FreeJira.Helpers
                 return Path.Combine(GetWindowsAppData(), "FreeJira");
             }
 
-            return "~/.free-jira";
+            var unixUserHome = GetUnixHomeDir();
+            if (!string.IsNullOrEmpty(unixUserHome)) {
+                return Path.Combine(unixUserHome, ".free-jira");
+            }
+
+            return ".free-jira";
         }
 
         /// <summary>
