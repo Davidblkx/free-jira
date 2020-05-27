@@ -24,9 +24,9 @@ jobs:
           dotnet-version: 3.1.100
       - name: Build target release
         run: |
-          dotnet publish -r $TARGET_WIN -c Release /p:PublishSingleFile=true
-          dotnet publish -r $TARGET_LIN -c Release /p:PublishSingleFile=true
-          dotnet publish -r $TARGET_OSX -c Release /p:PublishSingleFile=true
+          dotnet publish -r $TARGET_WIN -c Release
+          dotnet publish -r $TARGET_LIN -c Release
+          dotnet publish -r $TARGET_OSX -c Release
       - name: Zip release
         run: |
           zip --junk-paths -r free-jira.$TARGET_WIN-${{ steps.extract_tag.outputs.tag }}.zip free-jira/bin/Release/netcoreapp3.1/$TARGET_WIN/publish/*
