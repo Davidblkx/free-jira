@@ -106,9 +106,14 @@ namespace FreeJira.Reports
         protected override Task<IEnumerable<UserWorklogReportRow>> BuildRow(JiraIssue<UserWorklogReportFields> issue)
             => Task.Run(() => {
                 var list = new List<UserWorklogReportRow>();
+                var user = GetParamUser();
+
+                bool isUser(JiraWorklog? w)
+                    => (w?.Author?.EmailAddress?.IndexOf(user ?? "") ?? -1) == 0
+                        || w?.Author?.DisplayName == user;
                 
                 var worklogs = issue.Fields?.Worklog?.Worklogs
-                    .Where(w => IsInInterval(w?.Started));
+                    .Where(w => IsInInterval(w?.Started) && isUser(w));
                 if (worklogs is null) return list;
 
                 foreach(var w in worklogs)
