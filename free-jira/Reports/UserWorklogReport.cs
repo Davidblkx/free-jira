@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FreeJira.Jira.Model;
 using FreeJira.Jira.ReportEngine;
+using Optional;
 
 namespace FreeJira.Reports
 {
@@ -103,24 +104,26 @@ namespace FreeJira.Reports
                 => $"worklogAuthor in ({user}) && worklogDate >= \"{start}\" && worklogDate <= \"{end}\"");
         }
 
-        protected override Task<IEnumerable<UserWorklogReportRow>> BuildRow(JiraIssue<UserWorklogReportFields> issue)
-            => Task.Run(() => {
-                var list = new List<UserWorklogReportRow>();
-                var user = GetParamUser();
+        protected override async Task<IEnumerable<UserWorklogReportRow>> BuildRow(JiraIssue<UserWorklogReportFields> issue)
+        {
+            var list = new List<UserWorklogReportRow>();
+            var user = GetParamUser();
+            if (Client is null) { throw new ArgumentNullException("Can't load client"); }
+            var accountId = await this.Client.UserClient.loadAccountId(user);
+            if (!accountId.HasValue) { throw new Exception("Can't find user: " + user); }
 
-                bool isUser(JiraWorklog? w)
-                    => (w?.Author?.EmailAddress?.IndexOf(user ?? "") ?? -1) == 0
-                        || w?.Author?.DisplayName == user;
-                
-                var worklogs = issue.Fields?.Worklog?.Worklogs
-                    .Where(w => IsInInterval(w?.Started) && isUser(w));
-                if (worklogs is null) return list;
+            bool isUser(JiraWorklog? w)
+                => (w?.Author?.AccountId == accountId.ValueOr(""));
+            
+            var worklogs = issue.Fields?.Worklog?.Worklogs
+                .Where(w => IsInInterval(w?.Started) && isUser(w));
+            if (worklogs is null) return list;
 
-                foreach(var w in worklogs)
-                    list.Add(new UserWorklogReportRow(issue, w));
+            foreach(var w in worklogs)
+                list.Add(new UserWorklogReportRow(issue, w));
 
-                return list as IEnumerable<UserWorklogReportRow>;
-            });
+            return list as IEnumerable<UserWorklogReportRow>;
+        }
 
         protected override Task<Dictionary<string, string>> BuildResume(
             IEnumerable<JiraIssue<UserWorklogReportFields>> source, IEnumerable<UserWorklogReportRow> results)
