@@ -36,7 +36,7 @@ namespace FreeJira.Jira.ReportEngine
                 : paramsMap;
         }
 
-        public async Task PrintReport(JiraClient client, IJiraSprint? sprint, Dictionary<string, string> reportParams)
+        public async virtual Task PrintReport(JiraClient client, IJiraSprint? sprint, Dictionary<string, string> reportParams)
         {
             var res = await BuildReport(client, sprint, reportParams);
             foreach(var r in res.Item1)

@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using FreeJira.Jira.Model;
 using FreeJira.Jira.ReportEngine;
 using Optional;
+using FreeJira.Jira;
+using FreeJira.Jira.Profile.Sprint;
 
 namespace FreeJira.Reports
 {
@@ -95,6 +97,33 @@ namespace FreeJira.Reports
             return Task.Run(() => string.Join('\n', csv));
         }
 
+        public override async Task PrintReport(JiraClient client, IJiraSprint? sprint, Dictionary<string, string> reportParams)
+        {
+            var (rows, resume) = await BuildReport(client, sprint, reportParams);
+            var groups = rows.GroupBy(e => e.Date).OrderBy(e => e.Key);
+
+            foreach (var g in groups)
+                PrintRow(g);
+
+            for (var i = 0; i < 80; i++) Console.Write("=");
+            Console.Write("\n");
+            foreach(var k in resume)
+                Console.WriteLine($"{k.Key} = {k.Value}");
+        }
+
+        protected void PrintRow(IGrouping<DateTime, UserWorklogReportRow>? g)
+        {
+            if (g is null) return;
+            var total = g.Aggregate(0L, (e, a) => e+=a.Worklog) / 60 / 60;
+            Console.WriteLine(g.Key.ToString("yyyy-MM-dd") + $" [{total}h]");
+
+            foreach (var r in g.GroupBy(e => e.IssueKey))
+            {
+                var dayTotal = r.Aggregate(0L, (e, a) => e+= a.Worklog) / 60;
+                Console.WriteLine($"  {r.Key}: {dayTotal}m [{r.FirstOrDefault()?.IssueSummary}]");
+            }
+        }
+
         protected override Task<string> BuildJQL()
         {
             var user = GetParamUser();
@@ -114,9 +143,14 @@ namespace FreeJira.Reports
 
             bool isUser(JiraWorklog? w)
                 => (w?.Author?.AccountId == accountId.ValueOr(""));
+
+            // remove hours, minutes, seconds
+            DateTime SanitizeDate(DateTime d)
+                => new DateTime(d.Year, d.Month, d.Day);
             
             var worklogs = issue.Fields?.Worklog?.Worklogs
-                .Where(w => IsInInterval(w?.Started) && isUser(w));
+                .Where(w => IsInInterval(w?.Started) && isUser(w))
+                .Select(w => { w.Started = SanitizeDate(w.Started); return w; });
             if (worklogs is null) return list;
 
             foreach(var w in worklogs)
@@ -128,9 +162,7 @@ namespace FreeJira.Reports
         protected override Task<Dictionary<string, string>> BuildResume(
             IEnumerable<JiraIssue<UserWorklogReportFields>> source, IEnumerable<UserWorklogReportRow> results)
                 => Task.Run(() => new Dictionary<string, string>{
-                    ["Name"] = source.FirstOrDefault()?
-                        .Fields?.Worklog?.Worklogs?.FirstOrDefault()?
-                        .Author?.DisplayName ?? "Unkown",
+                    ["Name"] = GetParamUser(),
                     ["Total Hours"] = results
                         .Select(e => TimeSpan.FromSeconds(e.Worklog))
                         .Sum(e => e.TotalHours)
