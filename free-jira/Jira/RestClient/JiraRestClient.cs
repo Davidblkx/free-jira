@@ -1,4 +1,3 @@
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using RestSharp;
@@ -27,7 +26,7 @@ namespace FreeJira.Jira.Client
         public IAuthenticator Authenticator { get; }
         public Uri JiraServelUrl { get; }
 
-        private readonly RestClient _client;
+        private readonly RestSharp.RestClient _client;
 
         public JiraRestClient(IAuthenticator authenticator, string url)
         {
@@ -64,7 +63,7 @@ namespace FreeJira.Jira.Client
             if (!res.IsSuccessful) return None<TResponse>();
             try
             {
-                return Some(JsonConvert.DeserializeObject<TResponse>(res.Content));
+                return Some(JsonConvert.DeserializeObject<TResponse>(res.Content)).NotNull();
             }
             catch (Exception e) { 
                 Console.WriteLine(e.Message);
@@ -95,8 +94,8 @@ namespace FreeJira.Jira.Client
             return req;
         }
 
-        private RestClient BuildClient(Uri baseUrl, IAuthenticator authenticator) {
-            var cli = new RestClient(baseUrl);
+        private RestSharp.RestClient BuildClient(Uri baseUrl, IAuthenticator authenticator) {
+            var cli = new RestSharp.RestClient(baseUrl);
             var jsonOptions = BuildJsonOptions();
             cli.UseSystemTextJson(jsonOptions);
             cli.Authenticator = authenticator;

@@ -14,7 +14,7 @@ namespace FreeJira.Jira
             _restClient = restClient;
         }
         
-        public async Task<Option<string>> loadAccountId(string username)
+        public async Task<Option<string>> LoadAccountId(string username)
         {
             var request = JiraAccountRestCall.Create(username);
             var res = await _restClient.ExecuteAsync(request);

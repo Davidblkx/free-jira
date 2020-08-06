@@ -7,6 +7,7 @@ using FreeJira.Jira.ReportEngine;
 using Optional;
 using FreeJira.Jira;
 using FreeJira.Jira.Profile.Sprint;
+using FreeJira.Jira.RestCall;
 
 namespace FreeJira.Reports
 {
@@ -138,17 +139,17 @@ namespace FreeJira.Reports
             var list = new List<UserWorklogReportRow>();
             var user = GetParamUser();
             if (Client is null) { throw new ArgumentNullException("Can't load client"); }
-            var accountId = await this.Client.UserClient.loadAccountId(user);
+            var accountId = await Client.UserClient.LoadAccountId(user);
             if (!accountId.HasValue) { throw new Exception("Can't find user: " + user); }
 
             bool isUser(JiraWorklog? w)
                 => (w?.Author?.AccountId == accountId.ValueOr(""));
 
             // remove hours, minutes, seconds
-            DateTime SanitizeDate(DateTime d)
+            static DateTime SanitizeDate(DateTime d)
                 => new DateTime(d.Year, d.Month, d.Day);
-            
-            var worklogs = issue.Fields?.Worklog?.Worklogs
+
+            var worklogs = (await GetWorklogsForIssue(issue))
                 .Where(w => IsInInterval(w?.Started) && isUser(w))
                 .Select(w => { w.Started = SanitizeDate(w.Started); return w; });
             if (worklogs is null) return list;
@@ -156,7 +157,7 @@ namespace FreeJira.Reports
             foreach(var w in worklogs)
                 list.Add(new UserWorklogReportRow(issue, w));
 
-            return list as IEnumerable<UserWorklogReportRow>;
+            return list;
         }
 
         protected override Task<Dictionary<string, string>> BuildResume(
@@ -176,6 +177,27 @@ namespace FreeJira.Reports
             end.AddHours(23);
 
             return date >= start && date <= end;
+        }
+
+        private async Task<IEnumerable<JiraWorklog>> GetWorklogsForIssue(JiraIssue<UserWorklogReportFields> issue)
+        {
+            var mainWorklogList = issue.Fields?.Worklog;
+            if (mainWorklogList is null) return new List<JiraWorklog>();
+
+            IEnumerable<JiraWorklog>? worklogs = mainWorklogList.MaxResults >= mainWorklogList.Total
+                ? issue.Fields?.Worklog?.Worklogs
+                : await LoadWorklogsForIssue(issue.Id);
+
+            if (worklogs is null) return new List<JiraWorklog>();
+            return worklogs;
+        }
+
+        private async Task<IEnumerable<JiraWorklog>> LoadWorklogsForIssue(string keyOrId)
+        {
+            if (Client is null) return new List<JiraWorklog>();
+            return (await Client.IssueClient.IssueWorklogs(keyOrId))
+                .Map(e => e.Worklogs)
+                .ValueOr(new List<JiraWorklog>());
         }
     }
 }
