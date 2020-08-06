@@ -32,6 +32,19 @@ jobs:
           zip --junk-paths -r free-jira.$TARGET_WIN-${{ steps.extract_tag.outputs.tag }}.zip free-jira/bin/Release/netcoreapp3.1/$TARGET_WIN/publish/*
           zip --junk-paths -r free-jira.$TARGET_LIN-${{ steps.extract_tag.outputs.tag }}.zip free-jira/bin/Release/netcoreapp3.1/$TARGET_LIN/publish/*
           zip --junk-paths -r free-jira.$TARGET_OSX-${{ steps.extract_tag.outputs.tag }}.zip free-jira/bin/Release/netcoreapp3.1/$TARGET_OSX/publish/*
+      - name: create rpm script
+        run: |
+          mkdir -p .rpmpkg/usr/bin
+          cp -p free-jira/bin/Release/netcoreapp3.1/$TARGET_LIN/publish/* .rpmpkg/usr/bin/
+      - uses: jiro4989/build-rpm-action@v2
+        with:
+          summary: 'CLI tool to get worklogs from JIRA'
+          package: 'free-jira'
+          package_root: .rpmpkg
+          maintainer: 'dpires'
+          version:  ${{ github.ref }}
+          arch: 'x86_64'
+          desc: ''
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -52,4 +65,5 @@ jobs:
             free-jira.${{ env.TARGET_WIN }}-${{ steps.extract_tag.outputs.tag }}.zip
             free-jira.${{ env.TARGET_LIN }}-${{ steps.extract_tag.outputs.tag }}.zip
             free-jira.${{ env.TARGET_OSX }}-${{ steps.extract_tag.outputs.tag }}.zip
+            free-jira-${{ github.ref }}-1.el7.x86_64.rpm
           draft: true
